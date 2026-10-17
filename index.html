@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khelaw — Project Overview</title>
+<meta name="description" content="Khelaw is an indoor sports venue (turf) booking and management platform for Bangladesh. Project overview, status, architecture and roadmap.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS — "Soft Clay Turf"
+   ============================================================ */
+:root{
+  --paper:#f7f4ee;
+  --surface:#fffdf9;
+  --surface-2:#f1ece1;
+  --surface-3:#e9e2d4;
+
+  --ink:#14241c;
+  --ink-2:#4a5a51;
+  --ink-3:#7a8a80;
+
+  --turf-900:#06281a;
+  --turf-800:#0b3b26;
+  --turf-700:#12603d;
+  --turf-600:#1b7d50;
+  --turf-100:#e3f0e8;
+  --turf-050:#f0f7f2;
+
+  --flood:#ffc933;
+  --flood-2:#ffb800;
+  --flood-ink:#3a2a00;
+
+  --line:#e6dfd1;
+  --line-strong:#d3c9b6;
+
+  --warn-ink:#8a5a00;
+  --warn-bg:#fff3d1;
+  --warn-line:#f0d68a;
+
+  --ok-ink:#12603d;
+  --ok-bg:#e3f0e8;
+
+  --info-ink:#1d4d7a;
+  --info-bg:#e4eefa;
+
+  --radius-lg:26px;
+  --radius-md:18px;
+  --radius-sm:12px;
+
+  /* clay depth — soft, light from top */
+  --clay-1: 0 1px 2px rgba(20,36,28,.05), 0 4px 10px -6px rgba(20,36,28,.10);
+  --clay-2: 0 2px 4px rgba(20,36,28,.06), 0 12px 24px -14px rgba(20,36,28,.20), inset 0 -4px 8px rgba(20,36,28,.045);
+  --clay-3: 0 4px 8px rgba(20,36,28,.07), 0 22px 44px -22px rgba(20,36,28,.26), inset 0 -6px 12px rgba(20,36,28,.055);
+
+  --font-body:'Inter','Hind Siliguri',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Barlow Condensed','Inter',system-ui,sans-serif;
+  --font-bn:'Hind Siliguri','Inter',system-ui,sans-serif;
+  --font-mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+
+  --maxw:1140px;
+}
+
+[data-theme="dark"]{
+  --paper:#0d1511;
+  --surface:#131d17;
+  --surface-2:#182319;
+  --surface-3:#1e2b22;
+
+  --ink:#eef2ef;
+  --ink-2:#b6c3ba;
+  --ink-3:#8a998f;
+
+  --turf-900:#041a11;
+  --turf-800:#0b3b26;
+  --turf-700:#3fbf85;
+  --turf-600:#5bd49a;
+  --turf-100:#12281d;
+  --turf-050:#0f2018;
+
+  --flood:#ffc933;
+  --flood-2:#ffb800;
+  --flood-ink:#2a1e00;
+
+  --line:#24312a;
+  --line-strong:#33443a;
+
+  --warn-ink:#f0c26b;
+  --warn-bg:#2a2210;
+  --warn-line:#4a3d18;
+
+  --ok-ink:#5bd49a;
+  --ok-bg:#12281d;
+
+  --info-ink:#8fbcdf;
+  --info-bg:#122334;
+
+  --clay-1: 0 1px 2px rgba(0,0,0,.35), 0 4px 10px -6px rgba(0,0,0,.5);
+  --clay-2: 0 2px 4px rgba(0,0,0,.35), 0 12px 24px -14px rgba(0,0,0,.6), inset 0 -4px 8px rgba(0,0,0,.25);
+  --clay-3: 0 4px 8px rgba(0,0,0,.4), 0 22px 44px -22px rgba(0,0,0,.7), inset 0 -6px 12px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+h1,h2,h3,h4{margin:0;line-height:1.15;letter-spacing:-.01em;}
+p{margin:0;}
+::selection{background:var(--flood);color:var(--flood-ink);}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px;}
+.bn{font-family:var(--font-bn);}
+
+/* ============================================================
+   STICKY TOP: notice bar + header
+   ============================================================ */
+.sticky-top{
+  position:sticky;top:0;z-index:100;
+}
+
+.notice-bar{
+  background:linear-gradient(90deg,var(--flood) 0%,var(--flood-2) 100%);
+  color:var(--flood-ink);
+  border-bottom:2px solid rgba(58,42,0,.18);
+}
+.notice-inner{
+  max-width:var(--maxw);margin:0 auto;padding:9px 22px;
+  display:flex;align-items:center;gap:12px;
+  font-size:13.5px;font-weight:600;
+  flex-wrap:wrap;justify-content:center;text-align:center;
+}
+.notice-dot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--flood-ink);flex:none;
+  animation:pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(58,42,0,.35);}
+  50%{opacity:.65;transform:scale(.85);box-shadow:0 0 0 6px rgba(58,42,0,0);}
+}
+.notice-bar .en{font-weight:600;}
+.notice-bar .sep{opacity:.45;font-weight:400;}
+.notice-bar .bn{font-weight:500;}
+
+.site-header{
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.header-inner{
+  max-width:var(--maxw);margin:0 auto;padding:0 22px;
+  height:66px;display:flex;align-items:center;gap:20px;
+}
+
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;flex:none;}
+.brand-mark{
+  width:38px;height:38px;border-radius:12px;flex:none;
+  background:radial-gradient(circle at 30% 25%,var(--turf-600),var(--turf-800) 70%);
+  display:grid;place-items:center;
+  box-shadow:var(--clay-2);
+  position:relative;overflow:hidden;
+}
+.brand-mark::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,transparent 48%,rgba(255,255,255,.18) 49%,rgba(255,255,255,.18) 51%,transparent 52%),
+    radial-gradient(circle at 50% 50%,transparent 22%,rgba(255,255,255,.18) 23%,rgba(255,255,255,.18) 25%,transparent 26%);
+}
+.brand-mark span{
+  font-family:var(--font-display);font-weight:800;font-size:22px;
+  color:var(--flood);position:relative;z-index:1;line-height:1;
+  transform:translateY(1px);
+}
+.brand-word{
+  font-family:var(--font-display);font-weight:800;font-size:24px;
+  letter-spacing:.02em;color:var(--ink);line-height:1;
+}
+.brand-word b{color:var(--turf-700);font-weight:800;}
+
+.nav{margin-left:auto;display:flex;align-items:center;gap:4px;}
+.nav a{
+  text-decoration:none;font-size:14px;font-weight:500;color:var(--ink-2);
+  padding:8px 12px;border-radius:10px;transition:.18s;
+}
+.nav a:hover{color:var(--ink);background:var(--surface-2);}
+.nav a.active{color:var(--turf-700);background:var(--turf-100);}
+
+.header-actions{display:flex;align-items:center;gap:8px;margin-left:8px;}
+
+.icon-btn{
+  width:40px;height:40px;border-radius:12px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-2);cursor:pointer;
+  display:grid;place-items:center;transition:.18s;
+  box-shadow:var(--clay-1);
+}
+.icon-btn:hover{color:var(--ink);border-color:var(--line-strong);transform:translateY(-1px);}
+.icon-btn:active{transform:translateY(0);}
+.icon-btn svg{width:19px;height:19px;}
+
+.menu-toggle{display:none;}
+
+/* mobile nav */
+@media (max-width:900px){
+  .nav{
+    position:fixed;inset:auto 0 0 0;
+    background:var(--surface);
+    border-top:1px solid var(--line);
+    flex-direction:column;align-items:stretch;
+    padding:14px 18px calc(14px + env(safe-area-inset-bottom));
+    gap:4px;
+    transform:translateY(110%);
+    transition:transform .3s cubic-bezier(.2,.8,.2,1);
+    box-shadow:0 -10px 30px rgba(0,0,0,.12);
+    z-index:120;
+    border-radius:22px 22px 0 0;
+  }
+  .nav.open{transform:translateY(0);}
+  .nav a{padding:13px 14px;font-size:15px;border-radius:12px;}
+  .menu-toggle{display:grid;margin-left:auto;}
+  .header-inner{gap:10px;}
+  .brand-word{font-size:21px;}
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 85% -10%,rgba(255,201,51,.18) 0%,transparent 55%),
+    radial-gradient(90% 80% at 10% 110%,rgba(27,125,80,.35) 0%,transparent 60%),
+    linear-gradient(160deg,var(--turf-900) 0%,var(--turf-800) 55%,#0e4a30 100%);
+  color:#f2f7f3;
+  padding:74px 0 84px;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 72px),
+    radial-gradient(circle at 50% 50%,transparent 128px,rgba(255,255,255,.07) 129px,rgba(255,255,255,.07) 131px,transparent 132px);
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 85%);
+}
+.hero .wrap{position:relative;z-index:1;}
+
+.hero-badges{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px;}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12.5px;font-weight:600;letter-spacing:.02em;
+  padding:6px 13px;border-radius:999px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  color:#e7f0ea;
+  backdrop-filter:blur(4px);
+}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--flood);flex:none;}
+.pill.warn{
+  background:rgba(255,201,51,.16);
+  border-color:rgba(255,201,51,.45);
+  color:var(--flood);
+}
+.pill.warn .dot{animation:pulse 1.6s ease-in-out infinite;}
+
+.hero h1{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:clamp(44px,8vw,86px);
+  letter-spacing:-.015em;
+  line-height:.94;
+  margin-bottom:8px;
+}
+.hero h1 .accent{color:var(--flood);}
+.hero-tagline{
+  font-family:var(--font-display);
+  font-size:clamp(19px,3.2vw,28px);
+  font-weight:600;
+  letter-spacing:.01em;
+  color:#bfe0cd;
+  margin-bottom:22px;
+}
+.hero-lede{
+  max-width:660px;
+  font-size:clamp(15.5px,2vw,17.5px);
+  line-height:1.7;
+  color:#cfe2d6;
+  margin-bottom:14px;
+}
+.hero-lede .bn{
+  display:block;margin-top:10px;
+  color:#a9c9b6;font-size:15px;
+}
+
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;}
+
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:15px;font-weight:600;
+  padding:13px 24px;border-radius:14px;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:.2s cubic-bezier(.2,.8,.2,1);
+  font-family:inherit;
+}
+.btn-primary{
+  background:var(--flood);color:var(--flood-ink);
+  box-shadow:0 6px 0 -2px #d9a300, 0 14px 26px -12px rgba(255,201,51,.6);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 0 -2px #d9a300, 0 18px 32px -12px rgba(255,201,51,.7);}
+.btn-primary:active{transform:translateY(1px);box-shadow:0 3px 0 -2px #d9a300;}
+.btn-ghost{
+  background:rgba(255,255,255,.08);color:#eaf3ec;
+  border:1px solid rgba(255,255,255,.22);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.14);transform:translateY(-2px);}
+
+.hero-stats{
+  margin-top:56px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+}
+.stat{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--radius-md);
+  padding:18px 18px 16px;
+  backdrop-filter:blur(6px);
+}
+.stat-num{
+  font-family:var(--font-display);font-weight:800;
+  font-size:34px;line-height:1;color:var(--flood);
+  letter-spacing:-.01em;
+}
+.stat-label{
+  margin-top:6px;font-size:12.5px;font-weight:500;
+  color:#a9c9b6;letter-spacing:.01em;
+}
+@media (max-width:720px){
+  .hero{padding:52px 0 62px;}
+  .hero-stats{grid-template-columns:repeat(2,1fr);}
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+section{padding:82px 0;}
+section.tight{padding:60px 0;}
+section.alt{background:var(--surface);}
+section.alt-2{background:var(--surface-2);}
+
+[id]{scroll-margin-top:140px;}
+
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--turf-700);
+  margin-bottom:14px;
+}
+.eyebrow::before{
+  content:"";width:22px;height:2px;border-radius:2px;background:var(--turf-600);
+}
+.section-title{
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:clamp(30px,4.6vw,46px);
+  letter-spacing:-.015em;
+  margin-bottom:14px;
+  color:var(--ink);
+}
+.section-lede{
+  max-width:720px;
+  color:var(--ink-2);
+  font-size:16.5px;
+  line-height:1.72;
+  margin-bottom:44px;
+}
+.section-lede .bn{display:block;margin-top:8px;color:var(--ink-3);font-size:15px;}
+
+/* ============================================================
+   PROBLEM / SOLUTION
+   ============================================================ */
+.ps-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:22px;
+}
+.ps-card{
+  border-radius:var(--radius-lg);
+  padding:32px 30px;
+  box-shadow:var(--clay-2);
+  border:1px solid var(--line);
+}
+.ps-card.problem{
+  background:var(--surface);
+}
+.ps-card.solution{
+  background:linear-gradient(165deg,var(--turf-800),var(--turf-900));
+  color:#eaf3ec;border-color:transparent;
+  box-shadow:var(--clay-3);
+}
+.ps-card h3{
+  font-family:var(--font-display);
+  font-size:24px;font-weight:700;letter-spacing:-.005em;
+  margin-bottom:6px;
+}
+.ps-card .sub{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:18px;}
+.ps-card.problem .sub{color:var(--warn-ink);}
+.ps-card.solution .sub{color:var(--flood);opacity:.9;}
+.ps-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px;}
+.ps-list li{
+  display:flex;gap:12px;align-items:flex-start;
+  font-size:15px;line-height:1.6;
+}
+.ps-list .ico{
+  flex:none;width:22px;height:22px;border-radius:7px;
+  display:grid;place-items:center;font-size:13px;margin-top:2px;
+}
+.problem .ico{background:var(--warn-bg);color:var(--warn-ink);}
+.solution .ico{background:rgba(255,201,51,.18);color:var(--flood);}
+@media (max-width:820px){.ps-grid{grid-template-columns:1fr;}}
+
+.promise{
+  margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+.promise-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  padding:22px 24px;
+  box-shadow:var(--clay-1);
+  border-left:4px solid var(--flood);
+}
+.promise-card .who{
+  font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--turf-700);margin-bottom:8px;
+}
+.promise-card p{font-size:15.5px;line-height:1.6;color:var(--ink);}
+.promise-card p em{font-style:normal;font-weight:600;color:var(--turf-700);}
+@media (max-width:720px){.promise{grid-template-columns:1fr;}}
+
+/* ============================================================
+   SURFACES
+   ============================================================ */
+.surfaces{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+}
+.surface{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  padding:26px 22px;
+  box-shadow:var(--clay-2);
+  transition:.25s cubic-bezier(.2,.8,.2,1);
+  position:relative;overflow:hidden;
+}
+.surface:hover{transform:translateY(-4px);box-shadow:var(--clay-3);}
+.surface .ico{
+  width:48px;height:48px;border-radius:14px;
+  background:var(--turf-100);
+  display:grid;place-items:center;
+  margin-bottom:18px;
+  color:var(--turf-700);
+}
+.surface .ico svg{width:24px;height:24px;}
+.surface h4{font-size:17px;font-weight:700;margin-bottom:6px;}
+.surface .folder{
+  font-family:var(--font-mono);font-size:12px;
+  color:var(--turf-700);background:var(--turf-050);
+  padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:12px;
+}
+.surface p{font-size:14px;line-height:1.6;color:var(--ink-2);}
+.surface .stack{
+  margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);
+  font-size:12.5px;color:var(--ink-3);line-height:1.55;
+}
+@media (max-width:980px){.surfaces{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:560px){.surfaces{grid-template-columns:1fr;}}
+
+/* ============================================================
+   FEATURES
+   ============================================================ */
+.features{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+}
+.feature{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  padding:26px 24px;
+  box-shadow:var(--clay-1);
+  transition:.22s;
+}
+.feature:hover{box-shadow:var(--clay-2);transform:translateY(-3px);}
+.feature-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.feature .ico{
+  width:42px;height:42px;border-radius:12px;flex:none;
+  display:grid;place-items:center;font-size:19px;
+  background:var(--turf-100);
+}
+.tag{
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 9px;border-radius:999px;white-space:nowrap;
+}
+.tag.player{background:var(--info-bg);color:var(--info-ink);}
+.tag.owner{background:var(--ok-bg);color:var(--ok-ink);}
+.tag.admin{background:var(--warn-bg);color:var(--warn-ink);}
+.tag.all{background:var(--surface-3);color:var(--ink-2);}
+.feature h4{font-size:16px;font-weight:700;margin-bottom:7px;line-height:1.3;}
+.feature p{font-size:14px;color:var(--ink-2);line-height:1.6;}
+@media (max-width:980px){.features{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:620px){.features{grid-template-columns:1fr;}}
+
+/* ============================================================
+   BOOKING TIMELINE
+   ============================================================ */
+.timeline{
+  position:relative;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:14px;
+  margin-top:8px;
+}
+.timeline::before{
+  content:"";position:absolute;left:5%;right:5%;top:31px;height:2px;
+  background:linear-gradient(90deg,var(--turf-600),var(--flood));
+  opacity:.35;z-index:0;border-radius:2px;
+}
+.step{position:relative;z-index:1;text-align:center;}
+.step .num{
+  width:62px;height:62px;border-radius:20px;margin:0 auto 16px;
+  background:var(--surface);
+  border:2px solid var(--line);
+  display:grid;place-items:center;
+  font-family:var(--font-display);font-weight:800;font-size:24px;
+  color:var(--turf-700);
+  box-shadow:var(--clay-2);
+}
+.step.done .num{background:var(--turf-800);color:var(--flood);border-color:var(--turf-700);}
+.step h5{font-size:14.5px;font-weight:700;margin-bottom:5px;line-height:1.3;}
+.step p{font-size:12.8px;color:var(--ink-2);line-height:1.55;}
+@media (max-width:880px){
+  .timeline{grid-template-columns:1fr;gap:20px;}
+  .timeline::before{display:none;}
+  .step{display:flex;gap:16px;text-align:left;align-items:flex-start;}
+  .step .num{margin:0;flex:none;}
+}
+
+/* ============================================================
+   RULES — the dark code card
+   ============================================================ */
+.rules{
+  background:linear-gradient(160deg,#0a2e1f 0%,#06281a 100%);
+  border-radius:var(--radius-lg);
+  padding:44px 42px;
+  color:#e6f0ea;
+  box-shadow:var(--clay-3);
+  position:relative;overflow:hidden;
+}
+.rules::before{
+  content:"";position:absolute;inset:0;opacity:.45;pointer-events:none;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 64px);
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.8),transparent);
+}
+.rules > *{position:relative;z-index:1;}
+.rules .eyebrow{color:var(--flood);}
+.rules .eyebrow::before{background:var(--flood);}
+.rules h2{
+  font-family:var(--font-display);font-weight:800;
+  font-size:clamp(28px,4vw,40px);margin-bottom:10px;color:#fff;
+}
+.rules .lede{color:#a9c9b6;font-size:15.5px;max-width:720px;margin-bottom:34px;line-height:1.7;}
+
+.rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.rule{
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:var(--radius-md);
+  padding:26px 24px;
+}
+.rule .n{
+  font-family:var(--font-display);font-weight:800;font-size:15px;
+  color:var(--flood);letter-spacing:.1em;margin-bottom:10px;
+}
+.rule h4{font-size:17.5px;font-weight:700;margin-bottom:10px;color:#fff;}
+.rule p{font-size:14.5px;line-height:1.65;color:#b9d3c3;}
+.code{
+  margin-top:16px;
+  background:#04160d;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  padding:16px 18px;
+  font-family:var(--font-mono);
+  font-size:12.3px;
+  line-height:1.6;
+  color:#9edcb8;
+  overflow-x:auto;
+  white-space:pre;
+}
+.code .kw{color:var(--flood);}
+.code .cm{color:#5c7a68;font-style:italic;}
+@media (max-width:820px){.rule-grid{grid-template-columns:1fr;}}
+@media (max-width:620px){.rules{padding:32px 22px;}}
+
+/* ============================================================
+   BUSINESS MODEL
+   ============================================================ */
+.biz-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:26px;align-items:start;}
+.plans{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.plan{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  padding:22px 20px;
+  box-shadow:var(--clay-1);
+  position:relative;
+}
+.plan.hot{
+  border-color:var(--turf-600);
+  box-shadow:var(--clay-2);
+  background:linear-gradient(170deg,var(--turf-050),var(--surface));
+}
+.plan .badge{
+  position:absolute;top:-10px;right:14px;
+  background:var(--flood);color:var(--flood-ink);
+  font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;
+}
+.plan .dur{
+  font-family:var(--font-display);font-size:26px;font-weight:800;
+  color:var(--turf-700);line-height:1;margin-bottom:4px;
+}
+.plan .per{font-size:12.5px;color:var(--ink-3);margin-bottom:12px;}
+.plan .feat{font-size:13px;color:var(--ink-2);line-height:1.55;}
+.biz-note{
+  background:var(--warn-bg);
+  border:1px solid var(--warn-line);
+  border-radius:var(--radius-md);
+  padding:24px 24px;
+  color:var(--warn-ink);
+  font-size:14.5px;line-height:1.7;
+}
+.biz-note h4{font-size:15px;font-weight:800;margin-bottom:8px;color:var(--warn-ink);}
+.biz-note ul{margin:10px 0 0;padding-left:20px;}
+.biz-note li{margin-bottom:6px;}
+@media (max-width:880px){.biz-grid{grid-template-columns:1fr;}}
+
+/* ============================================================
+   STACK
+   ============================================================ */
+.stack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+.stack-col{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  padding:24px 22px;
+  box-shadow:var(--clay-1);
+}
+.stack-col h4{
+  font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--turf-700);margin-bottom:16px;
+  padding-bottom:12px;border-bottom:1px solid var(--line);
+}
+.stack-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;}
+.stack-col li{
+  font-size:13.8px;color:var(--ink-2);line-height:1.45;
+  display:flex;gap:8px;align-items:baseline;
+}
+.stack-col li::before{
+  content:"";width:5px;height:5px;border-radius:50%;background:var(--turf-600);
+  flex:none;transform:translateY(-2px);
+}
+.stack-col li b{color:var(--ink);font-weight:600;}
+@media (max-width:980px){.stack-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:560px){.stack-grid{grid-template-columns:1fr;}}
+
+/* ============================================================
+   ROADMAP
+   ============================================================ */
+.roadmap{display:flex;flex-direction:column;gap:0;position:relative;}
+.milestone{
+  display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;
+  padding:20px 0;border-bottom:1px solid var(--line);
+}
+.milestone:last-child{border-bottom:none;}
+.ms-id{
+  font-family:var(--font-display);font-weight:800;font-size:22px;
+  width:64px;height:52px;border-radius:14px;
+  display:grid;place-items:center;flex:none;
+  background:var(--surface-2);color:var(--ink-2);
+  border:1px solid var(--line);
+}
+.milestone.done .ms-id{background:var(--turf-800);color:var(--flood);border-color:transparent;}
+.milestone.current .ms-id{background:var(--flood);color:var(--flood-ink);border-color:transparent;box-shadow:0 0 0 4px rgba(255,201,51,.22);}
+.ms-body h4{font-size:16px;font-weight:700;margin-bottom:3px;}
+.ms-body p{font-size:13.5px;color:var(--ink-2);line-height:1.55;}
+.status{
+  font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  padding:5px 12px;border-radius:999px;white-space:nowrap;
+}
+.status.done{background:var(--ok-bg);color:var(--ok-ink);}
+.status.current{background:var(--warn-bg);color:var(--warn-ink);}
+.status.todo{background:var(--surface-3);color:var(--ink-3);}
+@media (max-width:680px){
+  .milestone{grid-template-columns:auto 1fr;gap:14px;}
+  .milestone .status{grid-column:2;justify-self:start;margin-top:6px;}
+}
+
+/* ============================================================
+   "WHAT'S LEFT" / NEEDS HUMAN
+   ============================================================ */
+.left-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.left-card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-left:4px solid var(--flood);
+  border-radius:var(--radius-sm);
+  padding:20px 22px;
+  box-shadow:var(--clay-1);
+}
+.left-card h5{font-size:14.5px;font-weight:700;margin-bottom:6px;}
+.left-card p{font-size:13.5px;color:var(--ink-2);line-height:1.6;}
+@media (max-width:900px){.left-grid{grid-template-columns:1fr;}}
+
+/* ============================================================
+   DOCS
+   ============================================================ */
+.docs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.doc{
+  display:flex;gap:16px;align-items:flex-start;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-md);
+  padding:22px 24px;
+  box-shadow:var(--clay-1);
+  transition:.2s;
+}
+.doc:hover{transform:translateY(-2px);box-shadow:var(--clay-2);border-color:var(--line-strong);}
+.doc .ico{
+  width:42px;height:42px;border-radius:12px;flex:none;
+  background:var(--surface-2);display:grid;place-items:center;
+  font-size:19px;
+}
+.doc .path{
+  font-family:var(--font-mono);font-size:12.5px;
+  color:var(--turf-700);background:var(--turf-050);
+  padding:1px 7px;border-radius:5px;display:inline-block;margin-bottom:8px;
+}
+.doc h5{font-size:15px;font-weight:700;margin-bottom:5px;}
+.doc p{font-size:13.5px;color:var(--ink-2);line-height:1.55;}
+@media (max-width:760px){.docs{grid-template-columns:1fr;}}
+
+/* ============================================================
+   FINAL NOTICE / FOOTER
+   ============================================================ */
+.final-notice{
+  background:linear-gradient(160deg,var(--turf-800),var(--turf-900));
+  border-radius:var(--radius-lg);
+  padding:48px 42px;
+  color:#eaf3ec;
+  box-shadow:var(--clay-3);
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.final-notice::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.4;
+  background-image:radial-gradient(circle at 50% 50%,transparent 118px,rgba(255,255,255,.07) 119px,rgba(255,255,255,.07) 121px,transparent 122px);
+}
+.final-notice > *{position:relative;z-index:1;}
+.final-notice .big-ico{
+  width:64px;height:64px;border-radius:20px;margin:0 auto 22px;
+  background:rgba(255,201,51,.16);
+  border:1px solid rgba(255,201,51,.4);
+  display:grid;place-items:center;font-size:28px;
+}
+.final-notice h2{
+  font-family:var(--font-display);font-weight:800;
+  font-size:clamp(26px,4vw,38px);margin-bottom:12px;color:#fff;
+}
+.final-notice p{
+  max-width:640px;margin:0 auto 8px;
+  color:#b9d3c3;font-size:15.5px;line-height:1.7;
+}
+.final-notice .bn{color:#8fb3a0;font-size:14.5px;margin-top:14px;}
+@media (max-width:620px){.final-notice{padding:34px 22px;}}
+
+footer{
+  background:var(--turf-900);
+  color:#9fbfad;
+  padding:48px 0 34px;
+  margin-top:0;
+}
+.footer-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr;gap:36px;
+  padding-bottom:34px;border-bottom:1px solid rgba(255,255,255,.09);
+}
+.footer-brand .brand-word{color:#fff;}
+.footer-brand p{
+  margin-top:14px;font-size:13.5px;line-height:1.7;color:#8fb3a0;max-width:380px;
+}
+.footer-col h5{
+  font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--flood);margin-bottom:14px;
+}
+.footer-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;}
+.footer-col a{
+  text-decoration:none;font-size:13.5px;color:#9fbfad;transition:.15s;
+}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{
+  padding-top:22px;display:flex;flex-wrap:wrap;gap:12px;
+  justify-content:space-between;align-items:center;
+  font-size:12.5px;color:#7a9a87;
+}
+.footer-bottom .badge-row{display:flex;gap:8px;flex-wrap:wrap;}
+.footer-bottom .mini{
+  padding:4px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  font-size:11.5px;color:#a9c9b6;
+}
+@media (max-width:760px){
+  .footer-grid{grid-template-columns:1fr;gap:26px;}
+}
+
+/* ============================================================
+   REVEAL
+   ============================================================ */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.8,.2,1);}
+.reveal.in{opacity:1;transform:none;}
+.reveal.d1{transition-delay:.06s;}
+.reveal.d2{transition-delay:.12s;}
+.reveal.d3{transition-delay:.18s;}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none;}
+  html{scroll-behavior:auto;}
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;}
+}
+
+/* back to top */
+.to-top{
+  position:fixed;right:20px;bottom:20px;z-index:90;
+  width:46px;height:46px;border-radius:14px;
+  background:var(--turf-800);color:var(--flood);
+  border:1px solid rgba(255,255,255,.12);
+  display:grid;place-items:center;cursor:pointer;
+  box-shadow:var(--clay-2);
+  opacity:0;pointer-events:none;transform:translateY(10px);
+  transition:.25s;
+}
+.to-top.show{opacity:1;pointer-events:auto;transform:none;}
+.to-top:hover{transform:translateY(-2px);}
+@media (max-width:900px){.to-top{bottom:calc(84px + env(safe-area-inset-bottom));}}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     STICKY: NOTICE + HEADER
+     ============================================================ -->
+<div class="sticky-top">
+  <div class="notice-bar" role="status" aria-live="polite">
+    <div class="notice-inner">
+      <span class="notice-dot" aria-hidden="true"></span>
+      <span class="en">Project not yet deployed — active development in progress.</span>
+      <span class="sep">·</span>
+      <span class="bn">প্রজেক্টটি এখনো রান করা হয়নি — কিছুদিনের মধ্যে রিলিজ করা হবে।</span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#top" class="brand" aria-label="Khelaw home">
+        <span class="brand-mark"><span>K</span></span>
+        <span class="brand-word">Khel<b>aw</b></span>
+      </a>
+
+      <nav class="nav" id="nav" aria-label="Main navigation">
+        <a href="#overview">Overview</a>
+        <a href="#surfaces">Surfaces</a>
+        <a href="#features">Features</a>
+        <a href="#booking">Booking Engine</a>
+        <a href="#stack">Tech Stack</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#docs">Docs</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle theme">
+          <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <button class="icon-btn menu-toggle" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+</div>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-badges reveal">
+      <span class="pill warn"><span class="dot"></span> Under active development</span>
+      <span class="pill">Bangladesh 🇧🇩</span>
+      <span class="pill">Bilingual · English / বাংলা</span>
+      <span class="pill">Monorepo · 4 surfaces</span>
+    </div>
+
+    <h1 class="reveal d1">Khelaw</h1>
+    <p class="hero-tagline reveal d1">Find a free slot. Book it in under a minute.</p>
+
+    <p class="hero-lede reveal d2">
+      Khelaw is an indoor sports venue — turf, futsal, cricket, badminton — booking and
+      management platform built for Bangladesh. Players see what's free near them right now
+      and book it before anyone else does. Owners get every slot, payment and customer on one
+      screen instead of a notebook and a ringing phone.
+      <span class="bn">
+        খেলোয়াড়রা কাছাকাছি খালি স্লট দেখে এক মিনিটে বুক করতে পারবে, আর ভেন্যু মালিকরা
+        সব বুকিং, পেমেন্ট ও কাস্টমার এক জায়গায় দেখতে পারবেন।
+      </span>
+    </p>
+
+    <div class="hero-cta reveal d2">
+      <a href="#overview" class="btn btn-primary">
+        Explore the project
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="#roadmap" class="btn btn-ghost">See the roadmap</a>
+    </div>
+
+    <div class="hero-stats reveal d3">
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">Client surfaces</div></div>
+      <div class="stat"><div class="stat-num">87</div><div class="stat-label">Recorded decisions</div></div>
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">Milestones (M0–M7)</div></div>
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label">Languages, 2 themes</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     OVERVIEW — PROBLEM / SOLUTION
+     ============================================================ -->
+<section id="overview" class="alt">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">The problem & the answer</span>
+      <h2 class="section-title">From a notebook and a ringing phone, to one screen.</h2>
+      <p class="section-lede">
+        Privately owned turf venues in Bangladesh rent by the hour — and today the whole
+        business runs on memory, WhatsApp and luck. Khelaw replaces that with a two-sided
+        platform: a booking engine players can trust, and an operations console owners
+        actually want to open.
+        <span class="bn">বাংলাদেশের ইনডোর টার্ফ ভেন্যুগুলোর জন্য একটি সম্পূর্ণ ডিজিটাল বুকিং ও ম্যানেজমেন্ট প্ল্যাটফর্ম।</span>
+      </p>
+    </div>
+
+    <div class="ps-grid">
+      <div class="ps-card problem reveal">
+        <div class="sub">Today</div>
+        <h3>The old way</h3>
+        <ul class="ps-list">
+          <li><span class="ico">✕</span><span>Bookings tracked in a notebook, WhatsApp or memory — double bookings and forgotten slots are routine.</span></li>
+          <li><span class="ico">✕</span><span>Owners spend the day answering calls asking “is 9–10 PM free tomorrow?”.</span></li>
+          <li><span class="ico">✕</span><span>bKash / Nagad advances verified by hand, with no link between a payment and a booking.</span></li>
+          <li><span class="ico">✕</span><span>No data: which hours are dead, who the regulars are, what was earned this month.</span></li>
+          <li><span class="ico">✕</span><span>Players call several venues one by one, get no answer, and arrive to find the slot taken.</span></li>
+        </ul>
+      </div>
+
+      <div class="ps-card solution reveal d1">
+        <div class="sub">With Khelaw</div>
+        <h3>The new way</h3>
+        <ul class="ps-list">
+          <li><span class="ico">✓</span><span>Real-time slot availability, held for 10 minutes while the player pays — no double bookings, by database constraint.</span></li>
+          <li><span class="ico">✓</span><span>Every request, payment and customer on one owner dashboard, with push + email the moment something changes.</span></li>
+          <li><span class="ico">✓</span><span>Manual bKash / Nagad / Rocket / Upay transfer with a generated reference — verified by a human, on both sides.</span></li>
+          <li><span class="ico">✓</span><span>Revenue, occupancy, peak-hour heatmaps and customer history — the data the notebook never had.</span></li>
+          <li><span class="ico">✓</span><span>One search, one map, one tap — see what's free near you and book it before someone else does.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="promise">
+      <div class="promise-card reveal">
+        <div class="who">For the player</div>
+        <p>“See what's free near me right now, book it in under a minute, and <em>know instantly when it's confirmed</em>.”</p>
+      </div>
+      <div class="promise-card reveal d1">
+        <div class="who">For the owner</div>
+        <p>“Every slot, every payment, every customer in one screen. <em>No more double bookings. Fewer phone calls.</em>”</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SURFACES
+     ============================================================ -->
+<section id="surfaces">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">One monorepo, four surfaces</span>
+      <h2 class="section-title">Everything that makes the product work.</h2>
+      <p class="section-lede">
+        Four projects in one repository, each with a single job. The backend is the source of
+        the API contract; the three clients are built against it.
+      </p>
+    </div>
+
+    <div class="surfaces">
+      <div class="surface reveal">
+        <div class="ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5M16 4v5"/></svg>
+        </div>
+        <span class="folder">backend/</span>
+        <h4>Backend API</h4>
+        <p>The booking engine, payments, subscriptions and notifications. The source of the OpenAPI contract every client is generated from.</p>
+        <div class="stack">Spring Boot 4 · Java 21 · PostgreSQL 16 · Cloudflare R2 · Brevo</div>
+      </div>
+
+      <div class="surface reveal d1">
+        <div class="ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+        </div>
+        <span class="folder">web/</span>
+        <h4>Player + Owner website</h4>
+        <p>Search, slot board, checkout, and a full owner mode with calendar, requests, analytics and subscription billing — in one app.</p>
+        <div class="stack">React 19 · Vite · TypeScript · Tailwind · TanStack Query</div>
+      </div>
+
+      <div class="surface reveal d2">
+        <div class="ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M12 22V12M3 7l9 5 9-5"/></svg>
+        </div>
+        <span class="folder">admin/</span>
+        <h4>Admin panel</h4>
+        <p>Approvals, platform payment verification, subscription plans, coupons, catalog and moderation — the operations console.</p>
+        <div class="stack">React 19 · Vite · TypeScript · TanStack Table · Recharts</div>
+      </div>
+
+      <div class="surface reveal d3">
+        <div class="ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+        </div>
+        <span class="folder">android/</span>
+        <h4>Android app</h4>
+        <p>Player and owner modes in one install — Compose screens, offline-tolerant caching, FCM push and QR check-in for the gate.</p>
+        <div class="stack">Kotlin · Jetpack Compose · MVVM · Hilt · Room</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section id="features" class="alt">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">What it does</span>
+      <h2 class="section-title">Built around the booking.</h2>
+      <p class="section-lede">
+        Every feature exists to move a slot from “free” to “confirmed” without a phone call,
+        and to make sure the money and the game arrive at the same place.
+      </p>
+    </div>
+
+    <div class="features">
+      <div class="feature reveal">
+        <div class="feature-top">
+          <div class="ico">🔍</div>
+          <span class="tag player">Player</span>
+        </div>
+        <h4>Search by sport, date & time</h4>
+        <p>Filter by sport, price, distance, amenities and payment mode. Only venues with a court fully free for your whole range appear.</p>
+      </div>
+
+      <div class="feature reveal d1">
+        <div class="feature-top">
+          <div class="ico">🗓️</div>
+          <span class="tag player">Player</span>
+        </div>
+        <h4>Live slot board</h4>
+        <p>Morning / afternoon / evening / night groups, per-slot prices, and states for held, pending, booked and blocked. Updates over WebSocket.</p>
+      </div>
+
+      <div class="feature reveal d2">
+        <div class="feature-top">
+          <div class="ico">⏱️</div>
+          <span class="tag player">Player</span>
+        </div>
+        <h4>10-minute checkout hold</h4>
+        <p>Starting checkout reserves the slot so nobody else grabs it while you send money in bKash. A countdown is always visible.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-top">
+          <div class="ico">💸</div>
+          <span class="tag player">Player</span>
+        </div>
+        <h4>Manual payment proof</h4>
+        <p>A generated reference (<code>KL7Q4M2X</code>), the venue's wallet details, and a proof form. One transaction ID, one booking.</p>
+      </div>
+
+      <div class="feature reveal d1">
+        <div class="feature-top">
+          <div class="ico">🎟️</div>
+          <span class="tag player">Player</span>
+        </div>
+        <h4>Ticket & QR check-in</h4>
+        <p>Confirmed bookings become a ticket with a QR the venue scans at the gate. Status timeline, reminders, add-to-calendar.</p>
+      </div>
+
+      <div class="feature reveal d2">
+        <div class="feature-top">
+          <div class="ico">✅</div>
+          <span class="tag owner">Owner</span>
+        </div>
+        <h4>Requests inbox & verification</h4>
+        <p>Expected amount vs. submitted amount side by side, the screenshot, and a duplicate-transaction check. Confirm, reject, or ask to fix.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-top">
+          <div class="ico">📅</div>
+          <span class="tag owner">Owner</span>
+        </div>
+        <h4>Calendar, offline bookings & blocks</h4>
+        <p>Day and week views with a current-time line. Tap an empty range to add a phone booking or block. Closures ask before cancelling games.</p>
+      </div>
+
+      <div class="feature reveal d1">
+        <div class="feature-top">
+          <div class="ico">📊</div>
+          <span class="tag owner">Owner</span>
+        </div>
+        <h4>Analytics & customers</h4>
+        <p>Revenue, occupancy, peak-hour heatmap, app-vs-offline split, repeat customers, no-show history and a private blocklist.</p>
+      </div>
+
+      <div class="feature reveal d2">
+        <div class="feature-top">
+          <div class="ico">💳</div>
+          <span class="tag owner">Owner</span>
+        </div>
+        <h4>Subscription & billing</h4>
+        <p>1 / 3 / 6 / 12-month plans, coupons, grace windows and reminders. When it lapses the venue hides — the data never disappears.</p>
+      </div>
+
+      <div class="feature reveal">
+        <div class="feature-top">
+          <div class="ico">🛡️</div>
+          <span class="tag admin">Admin</span>
+        </div>
+        <h4>One platform payment queue</h4>
+        <p>Application fees and subscriptions in a single queue. Approving a subscription payment activates the period instantly.</p>
+      </div>
+
+      <div class="feature reveal d1">
+        <div class="feature-top">
+          <div class="ico">🏟️</div>
+          <span class="tag admin">Admin</span>
+        </div>
+        <h4>Applications & venues</h4>
+        <p>Approve, request changes or reject owner applications. Suspend, feature, and see reliability metrics for every venue.</p>
+      </div>
+
+      <div class="feature reveal d2">
+        <div class="feature-top">
+          <div class="ico">✉️</div>
+          <span class="tag all">All</span>
+        </div>
+        <h4>Email, push & in-app — every update</h4>
+        <p>Branded HTML email through Brevo, FCM push and an in-app centre. Every status change is sent on all three, in the user's language.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BOOKING ENGINE
+     ============================================================ -->
+<section id="booking">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">The heart of the product</span>
+      <h2 class="section-title">A booking in five steps.</h2>
+      <p class="section-lede">
+        Nothing about a slot is decided by the client. The server generates it, prices it,
+        holds it, and PostgreSQL guarantees it can only be sold once.
+      </p>
+    </div>
+
+    <div class="timeline">
+      <div class="step done reveal">
+        <div class="num">1</div>
+        <h5>Pick a slot</h5>
+        <p>Availability is generated from the venue's operating hours, closures, booking window and existing bookings.</p>
+      </div>
+      <div class="step done reveal d1">
+        <div class="num">2</div>
+        <h5>Hold it</h5>
+        <p>The server creates a 10-minute hold and returns the price breakdown, the advance amount and a payment reference.</p>
+      </div>
+      <div class="step done reveal d2">
+        <div class="num">3</div>
+        <h5>Pay & submit proof</h5>
+        <p>The player transfers to the venue's wallet using the reference, then submits sender number, transaction ID and screenshot.</p>
+      </div>
+      <div class="step done reveal d3">
+        <div class="num">4</div>
+        <h5>Venue confirms</h5>
+        <p>The owner checks the proof and confirms. The player is notified on every channel and gets a QR ticket.</p>
+      </div>
+      <div class="step done reveal">
+        <div class="num">5</div>
+        <h5>Play & check in</h5>
+        <p>The venue scans the QR at the gate. The booking auto-completes at the end time, and a review prompt follows.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TWO RULES
+     ============================================================ -->
+<section class="tight">
+  <div class="wrap">
+    <div class="rules reveal">
+      <span class="eyebrow">Two rules before touching the code</span>
+      <h2>Correctness is not a feature. It is the foundation.</h2>
+      <p class="lede">
+        These two rules are the reason the booking engine can be trusted. Everything else in
+        the platform is built on top of them.
+      </p>
+
+      <div class="rule-grid">
+        <div class="rule">
+          <div class="n">RULE 01</div>
+          <h4>Double booking is prevented by PostgreSQL</h4>
+          <p>
+            Not by an application check. A GiST exclusion constraint on
+            <code>(court_id, time_range)</code> covers holds, pending, confirmed and checked-in
+            bookings — plus offline bookings and owner blocks, which live in the same table.
+          </p>
+          <div class="code"><span class="cm">-- never replace with an application-level check</span>
+<span class="kw">ALTER TABLE</span> booking <span class="kw">ADD CONSTRAINT</span> booking_no_overlap
+  <span class="kw">EXCLUDE USING</span> gist (court_id <span class="kw">WITH</span> =, time_range <span class="kw">WITH</span> &amp;&amp;)
+  <span class="kw">WHERE</span> (status <span class="kw">IN</span> ('HOLD','PENDING','CONFIRMED','CHECKED_IN'));</div>
+        </div>
+
+        <div class="rule">
+          <div class="n">RULE 02</div>
+          <h4>A slot belongs to the operating day it started on</h4>
+          <p>
+            A venue open Tuesday 15:00 → Wednesday 02:00 has its 01:00 slot on
+            <strong style="color:#fff">Tuesday</strong>. Every date filter, search query and
+            availability response uses this — not the calendar date.
+          </p>
+          <div class="code"><span class="cm">// venue open Tue 15:00 → Wed 02:00</span>
+01:00–02:00 on Wednesday
+  → operatingDate = <span class="kw">Tuesday</span>
+
+<span class="cm">// search "Tue 23:00–01:00" must match it</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BUSINESS MODEL
+     ============================================================ -->
+<section class="alt">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">How it makes money</span>
+      <h2 class="section-title">A per-venue subscription, not a cut of the game.</h2>
+      <p class="section-lede">
+        Khelaw never holds player money. Booking advances go straight to the owner's own
+        wallet. The platform's revenue is a subscription the venue pays to stay listed.
+      </p>
+    </div>
+
+    <div class="biz-grid">
+      <div class="reveal">
+        <div class="plans">
+          <div class="plan">
+            <div class="dur">1 mo</div>
+            <div class="per">Entry plan</div>
+            <div class="feat">Full listing, booking engine and owner console.</div>
+          </div>
+          <div class="plan hot">
+            <span class="badge">Popular</span>
+            <div class="dur">3 mo</div>
+            <div class="per">Quarterly</div>
+            <div class="feat">Everything in 1 month, at a lower monthly rate.</div>
+          </div>
+          <div class="plan">
+            <div class="dur">6 mo</div>
+            <div class="per">Half year</div>
+            <div class="feat">Savings badge shown on the plan card.</div>
+          </div>
+          <div class="plan">
+            <div class="dur">12 mo</div>
+            <div class="per">Yearly</div>
+            <div class="feat">Best per-month value, one payment a year.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="biz-note reveal d1">
+        <h4>How listing visibility works</h4>
+        <p>A venue is visible to players only while all three are true:</p>
+        <ul>
+          <li>the venue is <strong>ACTIVE</strong>,</li>
+          <li>its setup checklist is complete, and</li>
+          <li>a subscription period is <strong>active now</strong> (trial, paid or grace).</li>
+        </ul>
+        <p style="margin-top:12px;">
+          When it lapses, the venue disappears from home, search, map and booking — but
+          confirmed bookings stay valid and owner mode keeps working, with a red banner to
+          renew. No payment gateway, no escrow: every transfer is manual, with a generated
+          reference, verified by a human.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TECH STACK
+     ============================================================ -->
+<section id="stack">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">Under the hood</span>
+      <h2 class="section-title">A deliberately boring stack, used well.</h2>
+      <p class="section-lede">
+        Latest stable versions, PostgreSQL everywhere, and no service that a contributor has
+        to install to run the project locally.
+      </p>
+    </div>
+
+    <div class="stack-grid">
+      <div class="stack-col reveal">
+        <h4>Backend</h4>
+        <ul>
+          <li><b>Java 21</b> · Spring Boot 4</li>
+          <li>Spring Web · Security (JWT) · Data JPA</li>
+          <li>WebSocket / STOMP · Actuator</li>
+          <li><b>PostgreSQL 16</b> · Flyway</li>
+          <li><code>btree_gist</code> · <code>cube</code> · <code>earthdistance</code></li>
+          <li>MapStruct · Lombok · ShedLock</li>
+          <li>springdoc OpenAPI · Swagger UI</li>
+        </ul>
+      </div>
+
+      <div class="stack-col reveal d1">
+        <h4>Web & Admin</h4>
+        <ul>
+          <li><b>React 19</b> · Vite · TypeScript (strict)</li>
+          <li>Tailwind + shadcn/ui, custom design tokens</li>
+          <li>TanStack Query · Zustand · React Router</li>
+          <li>react-hook-form + zod</li>
+          <li>i18next (en / bn) · date-fns-tz</li>
+          <li>Leaflet + OpenStreetMap</li>
+          <li>@stomp/stompjs · Firebase JS SDK</li>
+        </ul>
+      </div>
+
+      <div class="stack-col reveal d2">
+        <h4>Android</h4>
+        <ul>
+          <li><b>Kotlin</b> · Jetpack Compose · Material 3</li>
+          <li>MVVM · Hilt · Coroutines + Flow</li>
+          <li>Retrofit + kotlinx.serialization</li>
+          <li>Room · DataStore · Paging 3</li>
+          <li>Navigation Compose · Coil 3</li>
+          <li>FCM · CameraX + ML Kit (QR)</li>
+          <li>WorkManager · Timber · Crashlytics</li>
+        </ul>
+      </div>
+
+      <div class="stack-col reveal d3">
+        <h4>Infrastructure</h4>
+        <ul>
+          <li><b>Cloudflare R2</b> — public + private buckets</li>
+          <li><b>Brevo</b> — transactional HTTP API</li>
+          <li>Redis — optional locally, required in prod</li>
+          <li>Firebase Cloud Messaging</li>
+          <li>GitHub Actions — 5 path-scoped workflows</li>
+          <li>Layered Docker image for the backend</li>
+          <li>gitleaks over the whole history</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROADMAP
+     ============================================================ -->
+<section id="roadmap" class="alt-2">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">Where the build is</span>
+      <h2 class="section-title">Eight milestones, end to end.</h2>
+      <p class="section-lede">
+        Each milestone is finished, tested and logged before the next one starts. The code
+        for M0 through M6 is complete; M7 is the polish and hardening pass.
+      </p>
+    </div>
+
+    <div class="roadmap">
+      <div class="milestone done reveal">
+        <div class="ms-id">M0</div>
+        <div class="ms-body">
+          <h4>Foundations</h4>
+          <p>Project scaffolding, design tokens, i18n, Flyway baseline, health endpoint, themed placeholder home in EN/BN and light/dark.</p>
+        </div>
+        <span class="status done">Complete</span>
+      </div>
+
+      <div class="milestone done reveal">
+        <div class="ms-id">M1</div>
+        <div class="ms-body">
+          <h4>Auth, users, media, settings, catalog</h4>
+          <p>Email OTP, JWT with rotating refresh tokens, multi-device sessions, devices &amp; sessions screen, media upload, platform settings, sports / amenities / locations.</p>
+        </div>
+        <span class="status done">Complete</span>
+      </div>
+
+      <div class="milestone done reveal">
+        <div class="ms-id">M2</div>
+        <div class="ms-body">
+          <h4>Owner onboarding, payments, subscriptions</h4>
+          <p>Owner application wizard, unified platform payments queue, subscription plans and listing visibility, coupons, venue setup checklist, mode switch.</p>
+        </div>
+        <span class="status done">Complete</span>
+      </div>
+
+      <div class="milestone done reveal">
+        <div class="ms-id">M3</div>
+        <div class="ms-body">
+          <h4>Availability &amp; booking engine</h4>
+          <p>Slot generation, after-midnight handling, booking window, price calculator, holds, state machine, offline bookings, blocks, check-in token, exclusion constraint and the 20-thread concurrency test.</p>
+        </div>
+        <span class="status done">Complete</span>
+      </div>
+
+      <div class="milestone done reveal">
+        <div class="ms-id">M4</div>
+        <div class="ms-body">
+          <h4>Player &amp; owner booking UX</h4>
+          <p>Home, search, map, venue details, slot board, checkout with countdown, my bookings, QR ticket, owner dashboard, requests inbox, calendar, phone booking and block sheets, QR scanner.</p>
+        </div>
+        <span class="status done">Complete</span>
+      </div>
+
+      <div class="milestone done reveal">
+        <div class="ms-id">M5</div>
+        <div class="ms-body">
+          <h4>Notifications, chat, reviews, favorites, reports</h4>
+          <p>Notification channel matrix, all email templates in EN/BN, FCM push, notification centre, reminders, nudge, chat over REST + STOMP, reviews and replies, favorites, reports, admin moderation and broadcasts.</p>
+        </div>
+        <span class="status done">Complete</span>
+      </div>
+
+      <div class="milestone done reveal">
+        <div class="ms-id">M6</div>
+        <div class="ms-body">
+          <h4>Analytics, customers, staff, admin completion</h4>
+          <p>Owner analytics and heatmap, customers and blocklist, staff invitations and roles, admin dashboard charts, users, booking search, audit log viewer, admin users and permissions.</p>
+        </div>
+        <span class="status done">Complete</span>
+      </div>
+
+      <div class="milestone current reveal">
+        <div class="ms-id">M7</div>
+        <div class="ms-body">
+          <h4>Polish &amp; hardening</h4>
+          <p>Full Bangla pass, dark mode, accessibility gates, performance budgets, query-count budgets, coverage gates, Playwright + Compose UI tests, Dockerfile, CI workflows and the final README.</p>
+        </div>
+        <span class="status current">In progress</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     WHAT'S LEFT
+     ============================================================ -->
+<section>
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">Not code — humans</span>
+      <h2 class="section-title">What's left before a public launch.</h2>
+      <p class="section-lede">
+        The application runs locally, but production needs accounts and credentials that only
+        a person can create.
+      </p>
+    </div>
+
+    <div class="left-grid">
+      <div class="left-card reveal">
+        <h5>Deployment</h5>
+        <p>The backend has not been deployed yet. The first production deploy is a milestone in its own right — after it, API breaking changes require a new version.</p>
+      </div>
+      <div class="left-card reveal d1">
+        <h5>Domain authentication</h5>
+        <p>SPF, DKIM and DMARC records for <strong>khelaw.site</strong> must be set up in Brevo, or transactional email will land in spam.</p>
+      </div>
+      <div class="left-card reveal d2">
+        <h5>Credentials &amp; keys</h5>
+        <p>Cloudflare R2 buckets, the Brevo API key, the Firebase service account and <code>google-services.json</code>, and a Google Maps API key for Android.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     DOCS
+     ============================================================ -->
+<section id="docs" class="alt">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">Where the truth lives</span>
+      <h2 class="section-title">Four documents, one source of truth.</h2>
+      <p class="section-lede">
+        The repository keeps its thinking written down. If you want to know why something is
+        the way it is, the answer is in one of these files.
+      </p>
+    </div>
+
+    <div class="docs">
+      <div class="doc reveal">
+        <div class="ico">📘</div>
+        <div>
+          <span class="path">docs/PROJECT_SPEC.md</span>
+          <h5>The product specification</h5>
+          <p>v1.4 — the single source of truth. Domain model, the booking engine rules, every feature per role, API design, architecture and the build plan.</p>
+        </div>
+      </div>
+
+      <div class="doc reveal d1">
+        <div class="ico">📋</div>
+        <div>
+          <span class="path">docs/PROGRESS.md</span>
+          <h5>Milestone checklist</h5>
+          <p>What is done, what is current, how to run everything, and every item that needs a human rather than an agent.</p>
+        </div>
+      </div>
+
+      <div class="doc reveal d2">
+        <div class="ico">🧭</div>
+        <div>
+          <span class="path">docs/DECISIONS.md</span>
+          <h5>Every non-trivial decision</h5>
+          <p>87 ADR-style entries with context, decision and consequence — including the mistakes, what caused them, and what now prevents them.</p>
+        </div>
+      </div>
+
+      <div class="doc reveal d3">
+        <div class="ico">🤖</div>
+        <div>
+          <span class="path">CLAUDE.md</span>
+          <h5>Working rules &amp; commands</h5>
+          <p>The rules the agent works under, the commands to run each project, and a map into the spec.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FINAL NOTICE
+     ============================================================ -->
+<section class="tight">
+  <div class="wrap">
+    <div class="final-notice reveal">
+      <div class="big-ico">🚧</div>
+      <h2>Not live yet — but close.</h2>
+      <p>
+        Khelaw is being built milestone by milestone, and every piece of it has been tested
+        against a real PostgreSQL database. It is not deployed to the public yet, and it is
+        not open for sign-ups. A release is coming soon.
+      </p>
+      <p class="bn">
+        প্রজেক্টটি এখনো পাবলিকভাবে চালু হয়নি। ডেভেলপমেন্টের কাজ চলছে — কিছুদিনের মধ্যে
+        রিলিজ করা হবে। তখন এই পেজেই আপডেট জানানো হবে।
+      </p>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand">
+          <span class="brand-mark"><span>K</span></span>
+          <span class="brand-word">Khel<b>aw</b></span>
+        </div>
+        <p>
+          Indoor sports venue booking and management for Bangladesh. Players find a free slot
+          and book it in under a minute. Owners get every slot, payment and customer on one
+          screen.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h5>Project</h5>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#surfaces">Surfaces</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#roadmap">Roadmap</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Technical</h5>
+        <ul>
+          <li><a href="#booking">Booking engine</a></li>
+          <li><a href="#stack">Tech stack</a></li>
+          <li><a href="#docs">Documentation</a></li>
+          <li><a href="#top">Back to top</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Khelaw · Project overview page</span>
+      <div class="badge-row">
+        <span class="mini">Status: under development</span>
+        <span class="mini">Not yet deployed</span>
+        <span class="mini">EN / বাংলা</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+</button>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- theme ---------- */
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('themeBtn');
+  var themeIcon = document.getElementById('themeIcon');
+
+  var SUN = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+  var MOON = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+
+  function applyTheme(t){
+    root.setAttribute('data-theme', t);
+    themeIcon.innerHTML = t === 'dark' ? SUN : MOON;
+    try { localStorage.setItem('khelaw-overview-theme', t); } catch(e){}
+  }
+
+  var saved = null;
+  try { saved = localStorage.getItem('khelaw-overview-theme'); } catch(e){}
+  if (!saved) {
+    saved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  applyTheme(saved);
+
+  themeBtn.addEventListener('click', function(){
+    applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  /* ---------- mobile nav ---------- */
+  var menuBtn = document.getElementById('menuBtn');
+  var nav = document.getElementById('nav');
+
+  menuBtn.addEventListener('click', function(){
+    var open = nav.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  nav.addEventListener('click', function(e){
+    if (e.target.tagName === 'A') {
+      nav.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded','false');
+    }
+  });
+
+  /* ---------- reveal on scroll ---------- */
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* ---------- active nav link ---------- */
+  var sections = ['overview','surfaces','features','booking','stack','roadmap','docs']
+    .map(function(id){ return document.getElementById(id); })
+    .filter(Boolean);
+
+  var navLinks = {};
+  nav.querySelectorAll('a').forEach(function(a){
+    var href = a.getAttribute('href');
+    if (href && href.charAt(0) === '#') navLinks[href.slice(1)] = a;
+  });
+
+  function setActive(){
+    var y = window.scrollY + 170;
+    var current = null;
+    sections.forEach(function(sec){
+      if (sec.offsetTop <= y) current = sec.id;
+    });
+    Object.keys(navLinks).forEach(function(id){
+      navLinks[id].classList.toggle('active', id === current);
+    });
+  }
+  window.addEventListener('scroll', setActive, { passive: true });
+  setActive();
+
+  /* ---------- back to top ---------- */
+  var toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', function(){
+    toTop.classList.toggle('show', window.scrollY > 700);
+  }, { passive: true });
+  toTop.addEventListener('click', function(){
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ---------- year ---------- */
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* ---------- smooth scroll fallback for older browsers ---------- */
+  if (!('scrollBehavior' in document.documentElement.style)) {
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){
+      a.addEventListener('click', function(e){
+        var id = a.getAttribute('href').slice(1);
+        var target = document.getElementById(id);
+        if (target) {
+          e.preventDefault();
+          window.scrollTo(0, target.offsetTop - 130);
+        }
+      });
+    });
+  }
+})();
+</script>
+</body>
+</html>
